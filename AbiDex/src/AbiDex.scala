@@ -36,9 +36,17 @@ object Main extends App {
         good_results <- results.right
         result <- good_results
     }{
-        println(result)
+        //println(result)
     }
 
+    for{
+        j <- List( List(1,2,3), List(5,6,7)  )
+        i <- j
+    }{
+
+        //println(j)
+        println(i)
+    }
     
 
 }
