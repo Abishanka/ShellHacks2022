@@ -101,11 +101,23 @@ object Main extends App {
         result <- good_results
         bbg <- result.bbg
     }{
+<<<<<<< HEAD
         
         suffixMap.put(bbg,result)
+=======
+        //println(result)
+>>>>>>> 74c6363a92048b35d2c48be205f1cf1db3b49e08
     }
     for( security <- suffixMap.query("19N3N") )println(security)*/
 
+    for{
+        j <- List( List(1,2,3), List(5,6,7)  )
+        i <- j
+    }{
+
+        //println(j)
+        println(i)
+    }
     
 
 }
