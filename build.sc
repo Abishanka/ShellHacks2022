@@ -8,9 +8,9 @@ object BurstTrieCheckout extends ScalaModule {
 
 object AbiDex extends ScalaModule {
   def scalaVersion = "2.11.12"//"2.11.4"
-  def moduleDeps = Seq(BurstTrieCheckout,ARS,CrossEntropyLoss)
+  def moduleDeps = Seq(ARS,CrossEntropyLoss)
   def ivyDeps = Agg(
-    //ivy"com.nefariouszhen.trie::scala-burst-trie:0.2",
+    ivy"com.nefariouszhen.trie::scala-burst-trie:0.2",
     ivy"io.circe::circe-core:0.11.2"
   )
   object test extends ScalaModule {
