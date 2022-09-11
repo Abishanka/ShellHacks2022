@@ -35,7 +35,7 @@ package object AbiDex extends {
     val header = fileSource.head.split(",")
     val defaultWeights = for(symbol <- header) yield (header.length - defaultPriorities.indexOf(symbol) ).toDouble
     for(i <- 0 to 10){
-        println(defaultWeights(i) , header(i) )
+        //println(defaultWeights(i) , header(i) )
     }
     private var fileContents:Array[String] = Array()
     private var data:Array[Array[Option[String]]] = Array()
