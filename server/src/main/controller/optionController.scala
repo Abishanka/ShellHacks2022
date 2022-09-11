@@ -15,7 +15,11 @@ class optionController {
 
     @CrossOrigin(origins = Array("http://localhost:3000"), allowCredentials = "false")
     @PostMapping(path = Array("/option"))
-    def result(@RequestBody op : optionModel) : String = {        
+    def result(@RequestBody op : String) : String = {  
+        var qry = Json.parse(op)("qry").as[String]
+        var secId = Json.parse(op)("securityId").as[String]
+
+        println("OPTION: " + qry +" " + secId)
         // var data = Json.parse(op)("data").as[String]
 
         // if(data == null){
@@ -25,6 +29,6 @@ class optionController {
         //var result = AbiDex.queryJSONString(data,count=2)
 
         //return result
-        return ""
+        return "success"
     }
 }
