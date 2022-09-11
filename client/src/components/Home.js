@@ -133,7 +133,6 @@ const Home = () => {
                     </thead>
                     <tbody>         
                         {tableData.length > 1 && tableData.map(val => 
-                            <boot.Button>
                             <tr> 
                                 <td>{<a href='#' style={{color: 'lightblue'}} onClick={(e) => handleOption(val.security_id)}>[|]</a>}</td>   
                                 <td>{val.symbol}</td>
@@ -148,7 +147,6 @@ const Home = () => {
                                 <td>{val.bb_yellow}</td>
                                 <td>{val.spn}</td>
                             </tr>
-                            </boot.Button>
                         )}
                     </tbody>
                 </boot.Table>

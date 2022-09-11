@@ -14,9 +14,9 @@ class mainController {
 
     @CrossOrigin(origins = Array("http://localhost:3000"), allowCredentials = "false")
     @PostMapping(path = Array("/query"))
-    def result(@RequestBody qry : String) : String = {        
-        var data = Json.parse(qry)("data").as[String]
-
+    def result(@RequestBody qry : String) : String = {     
+        println(qry)   
+        var data = Json.parse(qry)("param").as[String]
         if(data == null){
             return ""
         }
