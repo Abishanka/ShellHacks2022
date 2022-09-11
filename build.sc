@@ -30,6 +30,7 @@ object server extends ScalaModule {
     ivy"org.springframework.boot:spring-boot-autoconfigure:2.7.3",
     ivy"javax.servlet:javax.servlet-api:4.0.1",
     ivy"javax.validation:validation-api:2.0.1.Final",
-    ivy"org.springframework:spring-web:5.3.22"
+    ivy"org.springframework:spring-web:5.3.22",
+    ivy"org.springframework.boot:spring-boot-starter-web:2.7.3"
   )
 }
