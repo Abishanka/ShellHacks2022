@@ -4,37 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import '../custom.css'
 
 const Home = () => {
-    let mock = [{
-        security_id: "123",
-        cusip: "23",
-        sedol: "23",
-        isin: "32",
-        ric: "23",
-        bloomberg: "23",
-        bbg: "23",
-        symbol: "",
-        root_symbol: "",
-        bb_yellow: "",
-        spn: "23"
-    },
-    {
-        security_id: "562",
-        cusip: "23",
-        sedol: "23",
-        isin: "32",
-        ric: "23",
-        bloomberg: "23",
-        bbg: "23",
-        symbol: "",
-        root_symbol: "",
-        bb_yellow: "",
-        spn: "23"
-    },
-    
-    ]
-
-
-
     const [query, setQuery] = useState("");
     let tableTemplate = {
         security_id: "",
@@ -61,6 +30,7 @@ const Home = () => {
             body: JSON.stringify({data: query}),
             mode: 'cors'
         };
+
         if (query != "") {
             let response = await fetch('http://localhost:8080/query', ops)
             let json = await response.json()
@@ -78,7 +48,7 @@ const Home = () => {
                     
                     
                 })*/
-        }
+            }
     }
 
     return (
