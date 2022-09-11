@@ -31,6 +31,7 @@ object server extends ScalaModule {
   def scalaVersion = "2.11.12"//"2.11.4"
   def moduleDeps = Seq(BurstTrieCheckout, AbiDex)
   def ivyDeps = Agg(
+    ivy"com.typesafe.play::play-json:2.6.14",
     ivy"org.springframework:spring-core:5.3.22",
     ivy"org.springframework:spring-beans:5.3.22",
     ivy"org.springframework:spring-context:5.3.22",

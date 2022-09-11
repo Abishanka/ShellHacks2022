@@ -58,12 +58,23 @@ const Home = () => {
         const ops = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({param: query}),
+            body: JSON.stringify({data: query}),
             mode: 'cors'
         };
-        fetch('http://localhost:8080/query', ops)
-            .then(response => response.json())
-            .then(data => setTableData())
+        if (query != "") {
+            fetch('http://localhost:8080/query', ops)
+                .then(response => {
+                    console.log("here")
+                    console.log(response.json())
+                    console.log("there")
+                    //response.json().then(json => setTableData(json)).then(setTableState(true))
+                    console.log(response)
+                    //setTableData(JSON.parse(response).value)
+                    console.log(JSON.parse(JSON.stringify(response)))
+                    
+                    
+                })
+        }
     }
 
     return (
@@ -119,7 +130,8 @@ const Home = () => {
                         </tr>
                     </thead>
                     <tbody>         
-                        {tableData.length > 1 && tableData.map(val => 
+                        {tableState && tableData.map((val) => {
+                            return (
                             <tr> 
                                 <td>{}</td>   
                                 <td>{val.symbol}</td>
@@ -134,7 +146,7 @@ const Home = () => {
                                 <td>{val.bb_yellow}</td>
                                 <td>{val.spn}</td>
                             </tr>
-                        )}
+                        );})}
                     </tbody>
                 </boot.Table>
                 </boot.Col>
