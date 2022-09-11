@@ -58,9 +58,10 @@ const Home = () => {
         const ops = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({param: query})
+            body: JSON.stringify({param: query}),
+            mode: 'cors'
         };
-        fetch('http://localhost:8081/query', ops)
+        fetch('http://localhost:8080/query', ops)
             .then(response => response.json())
             .then(data => setTableData())
     }
