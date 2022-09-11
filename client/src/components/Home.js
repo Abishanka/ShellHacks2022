@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import * as boot from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../custom.css'
@@ -54,19 +54,36 @@ const Home = () => {
     const handleChange = async (e) => {
         e.preventDefault();
         setQuery(e.target.value)
+        // const ops = {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify({param: query}),
+        //     mode: 'cors'
+        // };
+        if (query != "") {
+            // let response = await fetch('http://localhost:8080/query', ops)
+            // let json = await response.json()
+            // setTableData(json)
+            // setTableState(true)
+        }
+    };
+
+    useEffect(() => {
         const ops = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({param: query}),
             mode: 'cors'
         };
-        if (query != "") {
+        const fetchData = async () => {
             let response = await fetch('http://localhost:8080/query', ops)
             let json = await response.json()
             setTableData(json)
             setTableState(true)
         }
-    };
+
+        fetchData()
+      }, [query])
     
     const handleOption = async (e) => {
         const ops = {
@@ -133,7 +150,7 @@ const Home = () => {
                         </tr>
                     </thead>
                     <tbody>         
-                        {tableData.length > 1 && tableData.map(val => 
+                        {tableData.length > 0 && tableData.map(val => 
                             <tr> 
                                 <td>{<boot.Button className="btn" style={{color: 'lightblue'}} variant='dark' onClick={() => handleOption(val.security_id)}>[|]</boot.Button>}</td>   
                                 <td>{val.symbol}</td>
