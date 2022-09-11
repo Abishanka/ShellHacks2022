@@ -10,7 +10,7 @@ case class PastQuery(
     frequency_map:mutable.HashMap[String,Double]
 )
 
-object AbiDex extends App {
+object AbiDex extends {
 
     val defaultPriorities = Array(
         "root_symbol",        
@@ -35,30 +35,32 @@ object AbiDex extends App {
     for(i <- 0 to 10){
         println(defaultWeights(i) , header(i) )
     }
+    private var fileContents:Array[String] = Array()
+    private var data:Array[Array[Option[String]]] = Array()
+    def init(dirty: Boolean = false,dirty_count: Int = 5000, verbose: Boolean = false) = {
 
-
-    val fileContents:Array[String] = fileSource.tail.take(100).toArray
-    val data =
+        fileContents = if(dirty) fileSource.tail.take(dirty_count).toArray else fileSource.tail.toArray
+        data =
+            for{
+                line <- fileContents
+            }yield for {
+                field <- line.split(",")
+            }yield field match {
+                    case "" => None
+                    case s => Some(s)
+                }
+        
         for{
-           line <- fileContents
-        }yield for {
-          field <- line.split(",")
-        }yield field match {
-                case "" => None
-                case s => Some(s)
-            }
-    
-    
-    for{
-        i <- 0 to data.length - 1
-        j <- 0 to suffixMaps.length - 1
-        if(j < data(i).length)
-        datum <- data(i)(j)
-    }{  
-        if( i % 10000 == 0 && j == 0) println ( (1.0*i) / data.length )
-        suffixMaps(j).put( datum, i )
+            i <- 0 to data.length - 1
+            j <- 0 to suffixMaps.length - 1
+            if(j < data(i).length)
+            datum <- data(i)(j)
+        }{  
+            if( i % 10000 == 0 && j == 0 && verbose) println ( (1.0*i) / data.length )
+            suffixMaps(j).put( datum, i )
+        }
     }
-    
+
     def collect[K,V](seq:Seq[(K,V)]):mutable.HashMap[K,List[V]] = {
         var out = new mutable.HashMap[K,List[V]]()
         for( (k,v) <- seq ){
@@ -70,7 +72,7 @@ object AbiDex extends App {
         out
     }
 
-    def query(q:String) = {
+    def internal_query(q:String) = {
         val exactMatches = 
             collect(for{
                 i <- 0 to header.length - 1
@@ -110,23 +112,30 @@ object AbiDex extends App {
         partialMatchesByStreetCategory:mutable.HashMap[Int,List[Int]],
         weights:Array[Double]) = {
         //KALASHNIKOV ALG 1, GIVE ALL BOIS EQUAL WEIGHT
-        val probabilities = (for{
+        val id_and_probabilities = (for{
             (security_id,street_categories) <- partialMatchesBySecurityID
         }yield ( security_id,(for(cat <- street_categories) yield weights(cat)).reduceLeft( (x,y) => Math.max(x,y) ))).toList.sortBy( t => -t._2 )
-        probabilities
+        id_and_probabilities
     }
 
-    val (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory) = query("96")
-    val priority_list = sortPartials(partialMatchesBySecurityID,partialMatchesByStreetCategory,defaultWeights)
+    def query(q:String,debug_string:String = ""):Array[Array[String]] = {
+        val (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory) = internal_query(q)
+        val (security_ids,probabilities) = sortPartials(partialMatchesBySecurityID,partialMatchesByStreetCategory,defaultWeights).unzip
+        
+        for( security_id <- security_ids.toArray )yield{
+            (for{ 
+                field <- data(security_id)
+            }yield field.getOrElse(debug_string)) ++ Array.tabulate(header.length - data(security_id).length)( (i) => debug_string )
+        }
+    }
+
     
 
 
 
 
-    println(header.mkString(","))
 
-    val sc = new java.util.Scanner(System.in)
-    val s = sc.nextLine()
+    
     
 
 }

@@ -13,6 +13,10 @@ object AbiDex extends ScalaModule {
     //ivy"com.nefariouszhen.trie::scala-burst-trie:0.2",
     ivy"io.circe::circe-core:0.11.2"
   )
+  object test extends ScalaModule {
+    def scalaVersion = "2.11.12"
+    def moduleDeps = Seq(AbiDex)
+  }
 }
 
 object ARS extends ScalaModule {
