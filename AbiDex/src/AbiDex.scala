@@ -1,3 +1,5 @@
+package abi.dex
+
 import com.nefariouszhen.trie.BurstTrie
 import java.io._
 import scala.io.Source
@@ -10,7 +12,7 @@ case class PastQuery(
     frequency_map:mutable.HashMap[String,Double]
 )
 
-object AbiDex extends {
+package object AbiDex extends {
 
     val defaultPriorities = Array(
         "root_symbol",        
