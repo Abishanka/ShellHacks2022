@@ -154,7 +154,7 @@ package object AbiDex extends {
     
     import abi.cel.CEL
     import abi.rs.ARS
-    def trainModel( dataa:List[PastQuery] ) = {
+    def trainModel( dataa:List[PastQuery],threshold:Int ) = {
         
         def lambda(weights:Array[Double],best_Loss:Double):Double = {
             var loss = 0.0
@@ -170,8 +170,8 @@ package object AbiDex extends {
             loss
         }
         val prev = lambda(bestWeights,Double.MaxValue)
-        bestWeights = ARS.run( 11,(x:Array[Double],y:Double) => lambda(x,y), threshold = 100 )
-        (prev,lambda(bestWeights,Double.MaxValue))
+        bestWeights = ARS.run( 11,(x:Array[Double],y:Double) => lambda(x,y), threshold = threshold )
+        (bestWeights.mkString(","),prev,lambda(bestWeights,Double.MaxValue))
     }
 
 
