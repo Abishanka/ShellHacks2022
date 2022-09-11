@@ -10,4 +10,4 @@ In essence, StreetDex is a search engine which not only takes into account all g
  2. Backend: Scala, Spring-Boot
  3. Data-Structures and Algorithm: Burst-Suffix-Tree, ARS (Accelerated Random Search)
 
-Built with ❤️ by Abishanak, Kevin, Michael and Tesla
+Built with ❤️ by Abishanka, Kevin, Michael and Tesla
