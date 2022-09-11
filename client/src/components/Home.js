@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import * as boot from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../custom.css'
+import Button from '@restart/ui/esm/Button';
 
 const Home = () => {
     let mock = [{
@@ -68,7 +69,6 @@ const Home = () => {
     };
     
     const handleOption = async (e) => {
-        e.preventDefault();
         const ops = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -76,7 +76,7 @@ const Home = () => {
             mode: 'cors'
         };
         let response = await fetch('http://localhost:8080/option', ops)
-        alert(response.json())
+        alert("SUCCESS")
     }
 
     return (
@@ -89,6 +89,7 @@ const Home = () => {
             <boot.Row>
                 <boot.Col lg='3' />
                 <boot.Col lg='6' style={{textAlign: 'center', fontSize: '2vh'}}>
+                    <img src="/logo.png" />
                     <boot.Form onSubmit={handleChange} className='mt-3'>
                         <boot.Row className='d-flex align-items-end' >
                             <boot.Col lg='2' />
@@ -134,7 +135,7 @@ const Home = () => {
                     <tbody>         
                         {tableData.length > 1 && tableData.map(val => 
                             <tr> 
-                                <td>{<a href='#' style={{color: 'lightblue'}} onClick={(e) => handleOption(val.security_id)}>[|]</a>}</td>   
+                                <td>{<boot.Button className="btn" style={{color: 'lightblue'}} variant='dark' onClick={() => handleOption(val.security_id)}>[|]</boot.Button>}</td>   
                                 <td>{val.symbol}</td>
                                 <td>{val.security_id}</td>
                                 <td>{val.cusip}</td>
