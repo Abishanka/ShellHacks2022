@@ -23,6 +23,10 @@ object ARS extends ScalaModule {
   def scalaVersion = "2.11.12"
 }
 
+object CrossEntropyLoss extends ScalaModule {
+  def scalaVersion = "2.11.12"
+}
+
 object server extends ScalaModule {
   def scalaVersion = "2.11.12"//"2.11.4"
   def moduleDeps = Seq(BurstTrieCheckout, AbiDex)
