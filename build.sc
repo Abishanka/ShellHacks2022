@@ -11,7 +11,7 @@ object AbiDex extends ScalaModule {
   def moduleDeps = Seq(BurstTrieCheckout)
   def ivyDeps = Agg(
     //ivy"com.nefariouszhen.trie::scala-burst-trie:0.2",
-    ivy"io.github.zamblauskas::scala-csv-parser:0.13.1",
+    ivy"io.circe::circe-core:0.11.2"
   )
 }
 

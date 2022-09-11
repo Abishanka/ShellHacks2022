@@ -1,32 +1,43 @@
 import com.nefariouszhen.trie.BurstTrie
 import java.io._
-import zamblauskas.csv.parser._
 import scala.io.Source
-import zamblauskas.csv.parser.util.CsvReaderUtil._
+import scala.collection.mutable
 
-case class Security(
-    security_id:String,
-    sedol:Option[String],
-    isin:Option[String],
-    ric:Option[String],
-    bloomberg:Option[String],
-    bbg:Option[String],
-    symbol:Option[String],
-    root_symbol:Option[String],
-    bb_yellow:Option[String],
-    spn:Option[String])
 
-object Main extends App {
+case class PastQuery(
+    query:String,
+    //maps from the string form of the security_id to the frequency that that security_id was picked as the final
+    frequency_map:mutable.HashMap[String,Double]
+)
+
+object AbiDex extends App {
+
+    val defaultPriorities = Array(
+        "root_symbol",        
+        "bbg",
+        "symbol",
+        "ric",
+        "cusip",
+        "isin",
+        "bb_yellow",
+        "bloomberg",
+        "spn",
+        "security_id",
+        "sedol"
+    )
+
     val suffixMaps = Array.tabulate(11)( (i) => BurstTrie.newSuffixMap[ Int ]())
-
-    //val baos = new ByteArrayOutputStream(1024)
-    //val o = new ObjectOutputStream(baos)
-    //o.writeObject(suffixMap)
 
     val filename = "Securities - Schonfeld ShellHacks.csv"
     val fileSource = Source.fromFile(filename).getLines.toList
     val header = fileSource.head.split(",")
-    val fileContents:Array[String] = fileSource.tail.take(1000).toArray
+    val defaultWeights = for(symbol <- header) yield (header.length - defaultPriorities.indexOf(symbol) ).toDouble
+    for(i <- 0 to 10){
+        println(defaultWeights(i) , header(i) )
+    }
+
+
+    val fileContents:Array[String] = fileSource.tail.take(100).toArray
     val data =
         for{
            line <- fileContents
@@ -47,7 +58,7 @@ object Main extends App {
         if( i % 10000 == 0 && j == 0) println ( (1.0*i) / data.length )
         suffixMaps(j).put( datum, i )
     }
-    import scala.collection.mutable
+    
     def collect[K,V](seq:Seq[(K,V)]):mutable.HashMap[K,List[V]] = {
         var out = new mutable.HashMap[K,List[V]]()
         for( (k,v) <- seq ){
@@ -68,10 +79,9 @@ object Main extends App {
                 street_id <- data(security_id)(i)
                 if(street_id == q)
             }yield {
-                //println(street_id,q,street_id)
                 (security_id,i)
             })
-        val partialMatches = 
+        val partialMatchesBySecurityID = 
             collect(for{
                 i <- 0 to header.length - 1
                 security_id <- suffixMaps(i).query(q)
@@ -79,45 +89,44 @@ object Main extends App {
                 street_id <- data(security_id)(i)
                 if(street_id != q)
             }yield {
-                //println(street_id,q,street_id)
                 (security_id,i)
             })
-        (exactMatches,partialMatches)
+        val partialMatchesByStreetCategory = 
+            collect(for{
+                i <- 0 to header.length - 1
+                security_id <- suffixMaps(i).query(q)
+                //need to add test for this, might be bug here
+                street_id <- data(security_id)(i)
+                if(street_id != q)
+            }yield {
+                (i,security_id)
+            })
+        
+        (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory)
     }
 
-    //for( security <- suffixMaps(6).query("19N3N") ) println( data(security).mkString(",") )
-    println(query("19N3N"))
+    def sortPartials(
+        partialMatchesBySecurityID:mutable.HashMap[Int,List[Int]],
+        partialMatchesByStreetCategory:mutable.HashMap[Int,List[Int]],
+        weights:Array[Double]) = {
+        //KALASHNIKOV ALG 1, GIVE ALL BOIS EQUAL WEIGHT
+        val probabilities = (for{
+            (security_id,street_categories) <- partialMatchesBySecurityID
+        }yield ( security_id,(for(cat <- street_categories) yield weights(cat)).reduceLeft( (x,y) => Math.max(x,y) ))).toList.sortBy( t => -t._2 )
+        probabilities
+    }
+
+    val (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory) = query("96")
+    val priority_list = sortPartials(partialMatchesBySecurityID,partialMatchesByStreetCategory,defaultWeights)
+    
+
+
+
+
     println(header.mkString(","))
 
     val sc = new java.util.Scanner(System.in)
     val s = sc.nextLine()
-    
-/*
-    val results = Parser.parse[Security](fileContents)
-    println(results)
-    println("done parsing")
-    for{
-        good_results <- results.right
-        result <- good_results
-        bbg <- result.bbg
-    }{
-<<<<<<< HEAD
-        
-        suffixMap.put(bbg,result)
-=======
-        //println(result)
->>>>>>> 74c6363a92048b35d2c48be205f1cf1db3b49e08
-    }
-    for( security <- suffixMap.query("19N3N") )println(security)*/
-
-    for{
-        j <- List( List(1,2,3), List(5,6,7)  )
-        i <- j
-    }{
-
-        //println(j)
-        println(i)
-    }
     
 
 }
