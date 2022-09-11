@@ -129,6 +129,10 @@ object AbiDex extends {
         }
     }
 
+    def queryJSONString(q:String):String = {
+        (for( result <- query(q) )yield (for( (head,key) <- header.zip(result) ) yield s""""$head":"${key}"""" ).mkString("{",",","}")).mkString("[",",","]")
+    }
+
     
 
 
