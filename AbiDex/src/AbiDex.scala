@@ -59,7 +59,7 @@ package object AbiDex extends {
             datum <- data(i)(j)
         }{  
             if( i % 10000 == 0 && j == 0 && verbose) println ( (1.0*i) / data.length )
-            suffixMaps(j).put( datum, i )
+            suffixMaps(j).put( datum.toUpperCase() , i )
         }
     }
 
@@ -74,39 +74,41 @@ package object AbiDex extends {
         out
     }
 
-    def internal_query(q:String) = {
-        val exactMatches = 
-            collect(for{
-                i <- 0 to header.length - 1
-                security_id <- suffixMaps(i).query(q)
-                //need to add test for this, might be bug here
-                street_id <- data(security_id)(i)
-                if(street_id == q)
-            }yield {
-                (security_id,i)
-            })
-        val partialMatchesBySecurityID = 
-            collect(for{
-                i <- 0 to header.length - 1
-                security_id <- suffixMaps(i).query(q)
-                //need to add test for this, might be bug here
-                street_id <- data(security_id)(i)
-                if(street_id != q)
-            }yield {
-                (security_id,i)
-            })
-        val partialMatchesByStreetCategory = 
-            collect(for{
-                i <- 0 to header.length - 1
-                security_id <- suffixMaps(i).query(q)
-                //need to add test for this, might be bug here
-                street_id <- data(security_id)(i)
-                if(street_id != q)
-            }yield {
-                (i,security_id)
-            })
-        
-        (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory)
+    def internal_query(qq:String) = {
+        var q = qq.toUpperCase()
+        synchronized {
+            val exactMatches = 
+                collect(for{
+                    i <- 0 to header.length - 1
+                    security_id <- suffixMaps(i).query(q)
+                    //need to add test for this, might be bug here
+                    street_id <- data(security_id)(i)
+                    if(street_id.toUpperCase() == q)
+                }yield {
+                    (security_id,i)
+                })
+            val partialMatchesBySecurityID = 
+                collect(for{
+                    i <- 0 to header.length - 1
+                    security_id <- suffixMaps(i).query(q)
+                    //need to add test for this, might be bug here
+                    street_id <- data(security_id)(i)
+                    if(street_id.toUpperCase() != q)
+                }yield {
+                    (security_id,i)
+                })
+            val partialMatchesByStreetCategory = 
+                collect(for{
+                    i <- 0 to header.length - 1
+                    security_id <- suffixMaps(i).query(q)
+                    //need to add test for this, might be bug here
+                    street_id <- data(security_id)(i)
+                    if(street_id.toUpperCase() != q)
+                }yield {
+                    (i,security_id)
+                })
+            (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory)
+        } 
     }
 
     def sortPartials(
@@ -124,11 +126,17 @@ package object AbiDex extends {
         val (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory) = internal_query(q)
         val (security_ids,probabilities) = sortPartials(partialMatchesBySecurityID,partialMatchesByStreetCategory,defaultWeights).unzip
         
-        (for( security_id <- security_ids.toArray )yield{
+        val part = (for( security_id <- security_ids.toArray )yield{
             (for{ 
                 field <- data(security_id)
             }yield field.getOrElse(debug_string)) ++ Array.tabulate(header.length - data(security_id).length)( (i) => debug_string )
         }).take(count)
+        val exact = (for( security_id <- exactMatches.toArray )yield{
+            (for{ 
+                field <- data(security_id._1)
+            }yield field.getOrElse(debug_string)) ++ Array.tabulate(header.length - data(security_id._1).length)( (i) => debug_string )
+        }).take(count)
+        if( exact.length == 0 ) part else exact
     }
 
     def queryJSONString(q:String,count:Int = 10):String = {

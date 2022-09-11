@@ -56,7 +56,7 @@ const Home = () => {
         const ops = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({data: query}),
+            body: JSON.stringify({param: query}),
             mode: 'cors'
         };
         if (query != "") {
@@ -132,8 +132,8 @@ const Home = () => {
                         </tr>
                     </thead>
                     <tbody>         
-                        {tableState && tableData.map((val) => {
-                            return (
+                        {tableData.length > 1 && tableData.map(val => 
+                            <boot.Button>
                             <tr> 
                                 <td>{<a href='#' style={{color: 'lightblue'}} onClick={(e) => handleOption(val.security_id)}>[|]</a>}</td>   
                                 <td>{val.symbol}</td>
@@ -148,7 +148,8 @@ const Home = () => {
                                 <td>{val.bb_yellow}</td>
                                 <td>{val.spn}</td>
                             </tr>
-                        );})}
+                            </boot.Button>
+                        )}
                     </tbody>
                 </boot.Table>
                 </boot.Col>
