@@ -33,7 +33,8 @@ package object AbiDex extends {
     val filename = "Securities - Schonfeld ShellHacks.csv"
     val fileSource = Source.fromFile(filename).getLines.toList
     val header = fileSource.head.split(",")
-    val defaultWeights = for(symbol <- header) yield (header.length - defaultPriorities.indexOf(symbol) ).toDouble
+    val defaultWeights = for(symbol <- header) yield (header.length - defaultPriorities.indexOf(symbol) )*(1.0/12)
+    var bestWeights = defaultWeights.clone()
     for(i <- 0 to 10){
         //println(defaultWeights(i) , header(i) )
     }
@@ -74,15 +75,15 @@ package object AbiDex extends {
         out
     }
 
-    def internal_query(qq:String) = {
+    def internal_query(qq:String,debug:Boolean = false) = {
         var q = qq.toUpperCase()
         synchronized {
             val exactMatches = 
                 collect(for{
                     i <- 0 to header.length - 1
-                    security_id <- suffixMaps(i).query(q)
+                    security_id <- {/*println(q,suffixMaps(i).query(q));*/suffixMaps(i).query(q)}
                     //need to add test for this, might be bug here
-                    street_id <- data(security_id)(i)
+                    street_id <- {/*println(data(security_id)(i));*/data(security_id)(i)}
                     if(street_id.toUpperCase() == q)
                 }yield {
                     (security_id,i)
@@ -107,6 +108,11 @@ package object AbiDex extends {
                 }yield {
                     (i,security_id)
                 })
+            if(debug){
+                println(exactMatches)
+                println(partialMatchesBySecurityID)
+                println(partialMatchesByStreetCategory)
+            }
             (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory)
         } 
     }
@@ -118,13 +124,15 @@ package object AbiDex extends {
         //KALASHNIKOV ALG 1, GIVE ALL BOIS EQUAL WEIGHT
         val id_and_probabilities = (for{
             (security_id,street_categories) <- partialMatchesBySecurityID
-        }yield ( security_id,(for(cat <- street_categories) yield weights(cat)).reduceLeft( (x,y) => Math.max(x,y) ))).toList.sortBy( t => -t._2 )
-        id_and_probabilities
+        }yield ( security_id,(for(cat <- street_categories) yield weights(cat)  ).reduceLeft( (x,y) => Math.max(x,y) ))).toList.sortBy( t => -t._2 )
+        val softsum = (id_and_probabilities.unzip._2).sum
+        val prob = for( p <- id_and_probabilities.unzip._2)yield p/softsum
+        (id_and_probabilities.unzip._1,prob)
     }
 
     def query(q:String,debug_string:String = "",count:Int = 10):Array[Array[String]] = {
         val (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory) = internal_query(q)
-        val (security_ids,probabilities) = sortPartials(partialMatchesBySecurityID,partialMatchesByStreetCategory,defaultWeights).unzip
+        val (security_ids,probabilities) = sortPartials(partialMatchesBySecurityID,partialMatchesByStreetCategory,defaultWeights)
         
         val part = (for( security_id <- security_ids.toArray )yield{
             (for{ 
@@ -144,6 +152,24 @@ package object AbiDex extends {
     }
 
     
+    import abi.cel.CEL
+    import abi.rs.ARS
+    def trainModel( dataa:List[PastQuery] ) = {
+        def lambda(weights:Array[Double],best_Loss:Double):Double = {
+            var loss = 0.0
+            for( PastQuery(query,frequency_map) <- dataa ){
+                val (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory) = internal_query(query)
+                val (security_ids,probabilities) = sortPartials(partialMatchesBySecurityID,partialMatchesByStreetCategory,weights)
+                val scc_name = for( id <- security_ids ) yield data(id)(0).getOrElse("")
+                val prob = mutable.HashMap() ++= scc_name.zip(probabilities)
+                
+                loss = loss + CEL.CE(frequency_map,prob)
+                if(loss > best_Loss) return loss
+            }
+            loss
+        }
+        bestWeights = ARS.run( 11,(x:Array[Double],y:Double) => lambda(x,y), threshold = 100 )
+    }
 
 
 
