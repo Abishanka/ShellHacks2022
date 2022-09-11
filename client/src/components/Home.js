@@ -33,8 +33,6 @@ const Home = () => {
     
     ]
 
-
-
     const [query, setQuery] = useState("");
     let tableTemplate = {
         security_id: "",
@@ -64,10 +62,21 @@ const Home = () => {
         if (query != "") {
             let response = await fetch('http://localhost:8080/query', ops)
             let json = await response.json()
-            console.log(json)
             setTableData(json)
             setTableState(true)
         }
+    };
+    
+    const handleOption = async (e) => {
+        e.preventDefault();
+        const ops = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({securityId: e, qry: query}),
+            mode: 'cors'
+        };
+        let response = await fetch('http://localhost:8080/option', ops)
+        alert(response.json())
     }
 
     return (
@@ -105,7 +114,7 @@ const Home = () => {
 
             <boot.Row>
                 <boot.Col style={{margin: '0.5vh'}}> 
-                <boot.Table id='result' className="table table-dark"> 
+                <boot.Table id='result' className="table table-dark table-hover table-responsive"> 
                     <thead>
                         <tr>
                             <th>Select</th>
@@ -126,7 +135,7 @@ const Home = () => {
                         {tableState && tableData.map((val) => {
                             return (
                             <tr> 
-                                <td>{}</td>   
+                                <td>{<a href='#' style={{color: 'lightblue'}} onClick={(e) => handleOption(val.security_id)}>[|]</a>}</td>   
                                 <td>{val.symbol}</td>
                                 <td>{val.security_id}</td>
                                 <td>{val.cusip}</td>
