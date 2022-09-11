@@ -58,27 +58,12 @@ const Home = () => {
         const ops = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({data: query}),
+            body: JSON.stringify({param: query}),
             mode: 'cors'
         };
-        if (query != "") {
-            let response = await fetch('http://localhost:8080/query', ops)
-            let json = await response.json()
-            console.log(json)
-            setTableData(json)
-            setTableState(true)
-                /*.then(response => {
-                    console.log("here")
-                    console.log(response.json())
-                    console.log("there")
-                    //response.json().then(json => setTableData(json)).then(setTableState(true))
-                    console.log(response)
-                    //setTableData(JSON.parse(response).value)
-                    console.log(JSON.parse(JSON.stringify(response)))
-                    
-                    
-                })*/
-        }
+        fetch('http://localhost:8080/query', ops)
+            .then(response => response.json())
+            .then(data => setTableData())
     }
 
     return (
@@ -134,8 +119,8 @@ const Home = () => {
                         </tr>
                     </thead>
                     <tbody>         
-                        {tableState && tableData.map((val) => {
-                            return (
+                        {tableData.length > 1 && tableData.map(val => 
+                            <boot.Button>
                             <tr> 
                                 <td>{}</td>   
                                 <td>{val.symbol}</td>
@@ -150,7 +135,8 @@ const Home = () => {
                                 <td>{val.bb_yellow}</td>
                                 <td>{val.spn}</td>
                             </tr>
-                        );})}
+                            </boot.Button>
+                        )}
                     </tbody>
                 </boot.Table>
                 </boot.Col>
