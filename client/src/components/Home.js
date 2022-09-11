@@ -61,9 +61,13 @@ const Home = () => {
             body: JSON.stringify({param: query}),
             mode: 'cors'
         };
-        fetch('http://localhost:8080/query', ops)
-            .then(response => response.json())
-            .then(data => setTableData())
+        if (query != "") {
+            let response = await fetch('http://localhost:8080/query', ops)
+            let json = await response.json()
+            console.log(json)
+            setTableData(json)
+            setTableState(true)
+        }
     }
 
     return (
