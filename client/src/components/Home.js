@@ -60,7 +60,7 @@ const Home = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({param: query})
         };
-        fetch('http://localhost:3000/query', ops)
+        fetch('http://localhost:8081/query', ops)
             .then(response => response.json())
             .then(data => setTableData())
     }
