@@ -62,8 +62,12 @@ const Home = () => {
             mode: 'cors'
         };
         if (query != "") {
-            fetch('http://localhost:8080/query', ops)
-                .then(response => {
+            let response = await fetch('http://localhost:8080/query', ops)
+            let json = await response.json()
+            console.log(json)
+            setTableData(json)
+            setTableState(true)
+                /*.then(response => {
                     console.log("here")
                     console.log(response.json())
                     console.log("there")
@@ -73,7 +77,7 @@ const Home = () => {
                     console.log(JSON.parse(JSON.stringify(response)))
                     
                     
-                })
+                })*/
         }
     }
 

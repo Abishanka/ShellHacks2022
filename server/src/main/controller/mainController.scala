@@ -20,7 +20,7 @@ class mainController {
         
         var data = Json.parse(qry)("data").as[String]
 
-        return "{\"deez\": \"nuts\"}"
+        //return "{\"deez\": \"nuts\"}"
 
         if(data == null){
             return ""
