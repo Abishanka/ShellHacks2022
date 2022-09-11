@@ -75,38 +75,39 @@ package object AbiDex extends {
     }
 
     def internal_query(q:String) = {
-        val exactMatches = 
-            collect(for{
-                i <- 0 to header.length - 1
-                security_id <- suffixMaps(i).query(q)
-                //need to add test for this, might be bug here
-                street_id <- data(security_id)(i)
-                if(street_id == q)
-            }yield {
-                (security_id,i)
-            })
-        val partialMatchesBySecurityID = 
-            collect(for{
-                i <- 0 to header.length - 1
-                security_id <- suffixMaps(i).query(q)
-                //need to add test for this, might be bug here
-                street_id <- data(security_id)(i)
-                if(street_id != q)
-            }yield {
-                (security_id,i)
-            })
-        val partialMatchesByStreetCategory = 
-            collect(for{
-                i <- 0 to header.length - 1
-                security_id <- suffixMaps(i).query(q)
-                //need to add test for this, might be bug here
-                street_id <- data(security_id)(i)
-                if(street_id != q)
-            }yield {
-                (i,security_id)
-            })
-        
-        (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory)
+        synchronized {
+            val exactMatches = 
+                collect(for{
+                    i <- 0 to header.length - 1
+                    security_id <- suffixMaps(i).query(q)
+                    //need to add test for this, might be bug here
+                    street_id <- data(security_id)(i)
+                    if(street_id == q)
+                }yield {
+                    (security_id,i)
+                })
+            val partialMatchesBySecurityID = 
+                collect(for{
+                    i <- 0 to header.length - 1
+                    security_id <- suffixMaps(i).query(q)
+                    //need to add test for this, might be bug here
+                    street_id <- data(security_id)(i)
+                    if(street_id != q)
+                }yield {
+                    (security_id,i)
+                })
+            val partialMatchesByStreetCategory = 
+                collect(for{
+                    i <- 0 to header.length - 1
+                    security_id <- suffixMaps(i).query(q)
+                    //need to add test for this, might be bug here
+                    street_id <- data(security_id)(i)
+                    if(street_id != q)
+                }yield {
+                    (i,security_id)
+                })
+            (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory)
+        } 
     }
 
     def sortPartials(
