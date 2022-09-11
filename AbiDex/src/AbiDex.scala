@@ -74,15 +74,15 @@ package object AbiDex extends {
         out
     }
 
-    def internal_query(qq:String) = {
+    def internal_query(qq:String,debug:Boolean = false) = {
         var q = qq.toUpperCase()
         synchronized {
             val exactMatches = 
                 collect(for{
                     i <- 0 to header.length - 1
-                    security_id <- suffixMaps(i).query(q)
+                    security_id <- {/*println(q,suffixMaps(i).query(q));*/suffixMaps(i).query(q)}
                     //need to add test for this, might be bug here
-                    street_id <- data(security_id)(i)
+                    street_id <- {/*println(data(security_id)(i));*/data(security_id)(i)}
                     if(street_id.toUpperCase() == q)
                 }yield {
                     (security_id,i)
@@ -107,6 +107,11 @@ package object AbiDex extends {
                 }yield {
                     (i,security_id)
                 })
+            if(debug){
+                println(exactMatches)
+                println(partialMatchesBySecurityID)
+                println(partialMatchesByStreetCategory)
+            }
             (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory)
         } 
     }
