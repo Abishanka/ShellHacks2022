@@ -67,17 +67,6 @@ const Home = () => {
             console.log(json)
             setTableData(json)
             setTableState(true)
-                /*.then(response => {
-                    console.log("here")
-                    console.log(response.json())
-                    console.log("there")
-                    //response.json().then(json => setTableData(json)).then(setTableState(true))
-                    console.log(response)
-                    //setTableData(JSON.parse(response).value)
-                    console.log(JSON.parse(JSON.stringify(response)))
-                    
-                    
-                })*/
         }
     }
 
