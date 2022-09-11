@@ -11,7 +11,7 @@ object Test extends App {
         println(result.mkString(","))
     }
 
-    println( AbiDex.queryJSONString("BBG001FC63F5",count = 2) )
+    println( AbiDex.queryJSONString("BBG001",count = 10) )
     val sc = new java.util.Scanner(System.in)
     val s = sc.nextLine()
 }

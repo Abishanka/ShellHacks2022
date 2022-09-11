@@ -1,7 +1,9 @@
+package abi.cel
+
 import Math.log10
 import scala.collection.mutable
 
-object CEL extends App {
+package object CEL  {
   //import scala.math._
   // calculate cross entropy
 
@@ -19,8 +21,8 @@ object CEL extends App {
 //  var q = Array(0.5, 0.5, 0.0, 0.0)
 //
 //  println(cross_entropy(p,q))
-  var t = mutable.HashMap( "cat" -> 0.75, "dog" -> 0.0, "hat" -> 0.0, "bog" -> 0.25 )
-  var p = mutable.HashMap( "dog" -> 0.0125, "hat" -> 0.0125, "cat" -> 0.75, "bog" -> 0.225 )
+  //var t = mutable.HashMap( "cat" -> 0.75, "dog" -> 0.0, "hat" -> 0.0, "bog" -> 0.25 )
+  //var p = mutable.HashMap( "dog" -> 0.0125, "hat" -> 0.0125, "cat" -> 0.75, "bog" -> 0.225 )
 
   //TRUTH and PROB
   def CE(t: mutable.HashMap[String,Double], p: mutable.HashMap[String,Double]) : Double ={
@@ -34,6 +36,6 @@ object CEL extends App {
 
     return -1.0*sum
   }
-  println( CE(t,p) )
+  //println( CE(t,p) )
 
 }
