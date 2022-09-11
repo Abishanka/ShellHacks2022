@@ -32,7 +32,7 @@ package object ARS  {
     var best_Loss = 999999999.0
     var shrink = 0
     while(shrink < threshold){
-      if (count % 10 == 0){
+      if (count % 10 == 0 && count > 0){
         println("Count:", count, "Loss", best_Loss)
       }
       var ran_array = new Array[Double](n)

@@ -14,6 +14,6 @@ class Server {
 }
 
 object Application extends App {
-    AbiDex.init(dirty = true,dirty_count = 100000,verbose=true)
+    AbiDex.init(dirty = false,dirty_count = 100000,verbose=true)
     SpringApplication.run(classOf[Server])
 }

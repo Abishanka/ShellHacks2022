@@ -77,7 +77,7 @@ package object AbiDex extends {
 
     def internal_query(qq:String,debug:Boolean = false) = {
         var q = qq.toUpperCase()
-        synchronized {
+         
             val exactMatches = 
                 collect(for{
                     i <- 0 to header.length - 1
@@ -113,8 +113,7 @@ package object AbiDex extends {
                 println(partialMatchesBySecurityID)
                 println(partialMatchesByStreetCategory)
             }
-            (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory)
-        } 
+        (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory)
     }
 
     def sortPartials(
@@ -162,7 +161,7 @@ package object AbiDex extends {
                 val (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory) = internal_query(query)
                 val (security_ids,probabilities) = sortPartials(partialMatchesBySecurityID,partialMatchesByStreetCategory,weights)
                 val scc_name = for( id <- security_ids ) yield data(id)(0).getOrElse("")
-                val prob = mutable.HashMap() ++= scc_name.zip(probabilities)
+                val prob = mutable.HashMap() ++= (scc_name.zip(probabilities)).take(10)
                 
                 loss = loss + CEL.CE(frequency_map,prob)
                 if(loss > best_Loss) return loss

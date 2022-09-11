@@ -27,7 +27,7 @@ import scala.io.Source
                 PastQuery(q, scala.collection.mutable.HashMap( sec_id -> 1.0 ) )
             }
         }).toList
-        println(AbiDex.trainModel(training_data,1000))
+        println(AbiDex.trainModel(training_data,70))
     }
     
 }
