@@ -118,19 +118,19 @@ object AbiDex extends {
         id_and_probabilities
     }
 
-    def query(q:String,debug_string:String = ""):Array[Array[String]] = {
+    def query(q:String,debug_string:String = "",count:Int = 10):Array[Array[String]] = {
         val (exactMatches,partialMatchesBySecurityID,partialMatchesByStreetCategory) = internal_query(q)
         val (security_ids,probabilities) = sortPartials(partialMatchesBySecurityID,partialMatchesByStreetCategory,defaultWeights).unzip
         
-        for( security_id <- security_ids.toArray )yield{
+        (for( security_id <- security_ids.toArray )yield{
             (for{ 
                 field <- data(security_id)
             }yield field.getOrElse(debug_string)) ++ Array.tabulate(header.length - data(security_id).length)( (i) => debug_string )
-        }
+        }).take(count)
     }
 
-    def queryJSONString(q:String):String = {
-        (for( result <- query(q) )yield (for( (head,key) <- header.zip(result) ) yield s""""$head":"${key}"""" ).mkString("{",",","}")).mkString("[",",","]")
+    def queryJSONString(q:String,count:Int = 10):String = {
+        (for( result <- query(q,count = count) )yield (for( (head,key) <- header.zip(result) ) yield s""""$head":"${key}"""" ).mkString("{",",","}")).mkString("[",",","]")
     }
 
     

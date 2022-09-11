@@ -9,7 +9,7 @@ object Test extends App {
         println(result.mkString(","))
     }
 
-    println( AbiDex.queryJSONString("09") )
+    println( AbiDex.queryJSONString("09",count = 2) )
 
     val sc = new java.util.Scanner(System.in)
     val s = sc.nextLine()
