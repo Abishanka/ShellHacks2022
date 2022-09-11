@@ -14,19 +14,13 @@ class mainController {
 
     @CrossOrigin(origins = Array("http://localhost:3000"), allowCredentials = "false")
     @PostMapping(path = Array("/query"))
-    def result(@RequestBody qry : String) : String = {
-        var result = "[{test: \"test\"}, {}]"
-        
-        
-        var data = Json.parse(qry)("data").as[String]
-
-        //return "{\"deez\": \"nuts\"}"
-
+    def result(@RequestBody qry : String) : String = {     
+        println(qry)   
+        var data = Json.parse(qry)("param").as[String]
         if(data == null){
             return ""
         }
-        AbiDex.init(dirty = true)
-        result = AbiDex.queryJSONString(data,count=2)
+        var result = AbiDex.queryJSONString(data,count=15)
 
         return result
     }

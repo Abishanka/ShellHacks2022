@@ -2,8 +2,38 @@ import React, {useState} from 'react';
 import * as boot from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../custom.css'
+import Button from '@restart/ui/esm/Button';
 
 const Home = () => {
+    let mock = [{
+        security_id: "123",
+        cusip: "23",
+        sedol: "23",
+        isin: "32",
+        ric: "23",
+        bloomberg: "23",
+        bbg: "23",
+        symbol: "",
+        root_symbol: "",
+        bb_yellow: "",
+        spn: "23"
+    },
+    {
+        security_id: "562",
+        cusip: "23",
+        sedol: "23",
+        isin: "32",
+        ric: "23",
+        bloomberg: "23",
+        bbg: "23",
+        symbol: "",
+        root_symbol: "",
+        bb_yellow: "",
+        spn: "23"
+    },
+    
+    ]
+
     const [query, setQuery] = useState("");
     let tableTemplate = {
         security_id: "",
@@ -27,28 +57,27 @@ const Home = () => {
         const ops = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({data: query}),
+            body: JSON.stringify({param: query}),
             mode: 'cors'
         };
 
         if (query != "") {
             let response = await fetch('http://localhost:8080/query', ops)
             let json = await response.json()
-            console.log(json)
             setTableData(json)
             setTableState(true)
-                /*.then(response => {
-                    console.log("here")
-                    console.log(response.json())
-                    console.log("there")
-                    //response.json().then(json => setTableData(json)).then(setTableState(true))
-                    console.log(response)
-                    //setTableData(JSON.parse(response).value)
-                    console.log(JSON.parse(JSON.stringify(response)))
-                    
-                    
-                })*/
-            }
+        }
+    };
+    
+    const handleOption = async (e) => {
+        const ops = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({securityId: e, qry: query}),
+            mode: 'cors'
+        };
+        let response = await fetch('http://localhost:8080/option', ops)
+        alert("SUCCESS")
     }
 
     return (
@@ -61,6 +90,7 @@ const Home = () => {
             <boot.Row>
                 <boot.Col lg='3' />
                 <boot.Col lg='6' style={{textAlign: 'center', fontSize: '2vh'}}>
+                    <img src="/logo.png" />
                     <boot.Form onSubmit={handleChange} className='mt-3'>
                         <boot.Row className='d-flex align-items-end' >
                             <boot.Col lg='2' />
@@ -86,7 +116,7 @@ const Home = () => {
 
             <boot.Row>
                 <boot.Col style={{margin: '0.5vh'}}> 
-                <boot.Table id='result' className="table table-dark"> 
+                <boot.Table id='result' className="table table-dark table-hover table-responsive"> 
                     <thead>
                         <tr>
                             <th>Select</th>
@@ -104,10 +134,9 @@ const Home = () => {
                         </tr>
                     </thead>
                     <tbody>         
-                        {tableState && tableData.map((val) => {
-                            return (
+                        {tableData.length > 1 && tableData.map(val => 
                             <tr> 
-                                <td>{}</td>   
+                                <td>{<boot.Button className="btn" style={{color: 'lightblue'}} variant='dark' onClick={() => handleOption(val.security_id)}>[|]</boot.Button>}</td>   
                                 <td>{val.symbol}</td>
                                 <td>{val.security_id}</td>
                                 <td>{val.cusip}</td>
@@ -120,7 +149,7 @@ const Home = () => {
                                 <td>{val.bb_yellow}</td>
                                 <td>{val.spn}</td>
                             </tr>
-                        );})}
+                        )}
                     </tbody>
                 </boot.Table>
                 </boot.Col>
